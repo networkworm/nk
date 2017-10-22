@@ -9,17 +9,19 @@
 ##################################################################################
 #
 # version:      0.6 
-# date:	        24.08.2017
-# writen by:    christoph weber 
+# version:      0.7 
+# date:	        23.10.2017
+# (c) by:       christoph weber 
 #
 ##################################################################################
 #
-# 0.1       initial version 
+# 0.1           initial version 
 # 0.2		some update
 # 0.3		referer list
 # 0.4		nbns
 # 0.5		bug fixing 
 # 0.6 		oui-mac + bootp-Hostname
+# 0.7           capinfos UTC 
 # 
 ##################################################################################
 # 
@@ -86,9 +88,18 @@ nk_msg(){
 #
 nk_capinfo()
 	{
+	nk_msg "Pcap Filesummary" "capinfos"
 	capinfos  $PCAPFILE
 	}
 #
+nk_captimeinfo()
+	{
+	nk_msg "File Stat/End Time" "Filedate"
+	capinfos -a -e $PCAPFILE
+	nk_msg "File Stat/End Time" "UTC"
+	TZ=UTC capinfos -a -e $PCAPFILE
+        }
+	
 ##################################################################################
 #
 # netknuddel display User Agent Summary / all types of seen Useragents 
@@ -131,6 +142,7 @@ nk_http_user_cnt_agent()
 #
 ##################################################################################
 #
+ü
 nk_http_get_requests()
 	{
 	nk_msg "get requests" "src/dst-ip host uri"
@@ -196,6 +208,43 @@ nk_http_notget_met()
 	nk_msg "NOT GET Methode" "src/dst ip methode full uri"
 	$TSHARK -r $PCAPFILE -Y "http.request.method != GET" -T fields -e ip.src -e ip.dst -e http.request.method -e http.request.full_uri 
 	}
+#
+##################################################################################
+#
+# netknuddel  http Respose 200
+#
+##################################################################################
+#
+nk_http_response200()
+	{
+	nk_msg "HTTP Response 200" "src ip,dst ip,code,phrase"
+	$TSHARK -r $PCAPFILE -Y "http.response.code == 200" -T fields  -e ip.src -e ip.dst -e http.response.code -e http.response.phrase
+	}
+#
+##################################################################################
+#
+# netknuddel  http Respose NOT  200
+#
+##################################################################################
+#
+nk_http_responsenot200()
+	{
+	nk_msg "HTTP Response NOT  200" "src ip,dst ip,code,phrase"
+	$TSHARK -r $PCAPFILE -Y "http.response.code == 200" -T fields  -e ip.src -e ip.dst -e http.response.code -e http.response.phrase
+	}
+#
+##################################################################################
+#
+# netknuddel  http Respose code content length + type
+#
+##################################################################################
+#
+nk_http_response_short()
+	{
+	nk_msg "HTTP Response Type + Content " "src ip,dst ip,code,content length,content type"
+	$TSHARK -r $PCAPFILE -Y "http.server" -T fields -e ip.src -e ip.dst -e http.response.code -e http.content_length -e http.content_type
+	}
+#
 #
 ##################################################################################
 #
@@ -279,6 +328,7 @@ nk_bootp_hostname()
 #
 nk_msg "Netknuddel Report" $PCAPFILE
 nk_capinfo
+nk_captimeinfo
 nk_http_user_agent
 nk_http_user_ip_agent
 nk_http_user_cnt_agent
@@ -288,6 +338,9 @@ nk_http_full_request_referer
 nk_http_host
 nk_http_get_met
 nk_http_notget_met
+#nk_http_responsenot200
+#nk_http_responsenotnot200
+nk_http_response_short
 nk_http_ultimate
 nk_dns_all
 nk_dns_nx_sf
