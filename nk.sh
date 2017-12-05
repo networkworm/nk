@@ -8,20 +8,20 @@
 #
 ##################################################################################
 #
-# version:      0.6 
-# version:      0.7 
-# date:	        23.10.2017
+# version:      0.08 
+# date:	        05.12.2017
 # (c) by:       christoph weber 
 #
 ##################################################################################
 #
-# 0.1           initial version 
+# 0.1       initial version 
 # 0.2		some update
 # 0.3		referer list
 # 0.4		nbns
 # 0.5		bug fixing 
 # 0.6 		oui-mac + bootp-Hostname
-# 0.7           capinfos UTC 
+# 0.7       capinfos UTC 
+# 0.8       fix typo
 # 
 ##################################################################################
 # 
@@ -142,7 +142,6 @@ nk_http_user_cnt_agent()
 #
 ##################################################################################
 #
-ü
 nk_http_get_requests()
 	{
 	nk_msg "get requests" "src/dst-ip host uri"
