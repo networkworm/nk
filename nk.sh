@@ -8,8 +8,8 @@
 #
 ##################################################################################
 #
-# version:      0.08 
-# date:	        05.12.2017
+# version:      0.9 
+# date:	        07.06.2018
 # (c) by:       christoph weber 
 #
 ##################################################################################
@@ -22,10 +22,11 @@
 # 0.6 		oui-mac + bootp-Hostname
 # 0.7       capinfos UTC 
 # 0.8       fix typo
+# 0.9       email extract / dns query answer / dns short list 
 # 
 ##################################################################################
-# 
-# tshark -r FILE.pcap -Y "dns.flags.response == 1" -T fields -E separator=\;  -e dns.qry.name -e dns.a |sort | uniq 
+#
+#
 #
 ##################################################################################
 #	variables
@@ -271,6 +272,30 @@ nk_dns_all()
 #
 ##################################################################################
 #
+# netknuddel  DNS query / answer
+#
+##################################################################################
+#
+nk_dns_query_answer()
+	{
+	nk_msg "DNS" "DNS query answer"
+	$TSHARK -r $PCAPFILE -Y "dns.flags.response == 1" -T fields -E separator=\; -E quote=s -e frame.time -e dns.qry.name -e dns.a
+	}
+#
+##################################################################################
+#
+# netknuddel  DNS Name list short
+#
+##################################################################################
+#
+nk_dns_short_list()
+	{
+	nk_msg "DNS" "Short DNS List"
+	$TSHARK -r $PCAPFILE -V -Y "dns" | grep "Name:" | awk '{print $2}' | sort -u 
+	}
+#
+##################################################################################
+#
 # netknuddel  DNS NXDOMAIN or SERVFAIL
 #
 ##################################################################################
@@ -321,6 +346,17 @@ nk_bootp_hostname()
 	}
 ##################################################################################
 #
+# netknuddel  extract email addresses 
+#
+##################################################################################
+#
+nk_extract_email_addr()
+	{
+	nk_msg "Email Addresses"
+	$TSHARK -lr $PCAPFILE -Y "data-text-lines" -T fields -e text | grep -Eio '\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b' | sort -u
+	}
+##################################################################################
+#
 # netknuddel main
 #
 ##################################################################################
@@ -342,7 +378,10 @@ nk_http_notget_met
 nk_http_response_short
 nk_http_ultimate
 nk_dns_all
+nk_dns_query_answer
+nk_dsn_short_list
 nk_dns_nx_sf
 nk_nbns_name_ip
 nk_oui_mac
 nk_bootp_hostname
+nk_extract_email_addr
